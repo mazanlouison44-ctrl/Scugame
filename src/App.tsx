@@ -527,7 +527,7 @@ export function App() {
   }
 
   return (
-    <div className="min-h-[100dvh] w-full max-w-[100vw] overflow-x-hidden bg-[#0b0f19] text-slate-100 flex flex-col">
+    <div className="min-h-[100dvh] w-full bg-[#0b0f19] text-slate-100 flex flex-col">
       {/* Main Mobile Container */}
       <main className="w-full max-w-md mx-auto px-3.5 sm:px-4 safe-top flex-1 min-w-0">
         {syncMessage && (

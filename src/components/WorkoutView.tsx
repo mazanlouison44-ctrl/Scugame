@@ -14,6 +14,7 @@ import {
   Sparkles,
   CheckCircle2,
   SlidersHorizontal,
+  ArrowLeft,
 } from 'lucide-react';
 import {
   ActiveWorkoutDraft,
@@ -191,6 +192,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
       exercises: [...draft.exercises, newLog],
     });
     setShowExercisePicker(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleCreateCustomExercise = (e: React.FormEvent) => {
@@ -377,8 +379,282 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
     });
   }, [exercises, searchQuery, selectedCategory, selectedEquipment]);
 
+  // ============================================================================
+  // VIEW 1: FULL-SCREEN CUSTOM EXERCISE CREATOR (Native full-page scroll)
+  // ============================================================================
+  if (showExercisePicker && isCreatingCustom) {
+    return (
+      <div className="w-full space-y-4 pb-28 animate-pop">
+        <div className="sticky top-0 z-30 bg-[#0b0f19]/95 backdrop-blur-md border-b border-slate-800 py-3 flex items-center justify-between gap-2">
+          <button
+            type="button"
+            onClick={() => setIsCreatingCustom(false)}
+            className="px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-200 flex items-center gap-1.5"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span>Retour</span>
+          </button>
+          <h2 className="text-sm font-extrabold text-white truncate">
+            Nouvel exercice personnalisé
+          </h2>
+          <div className="w-16" />
+        </div>
+
+        <form onSubmit={handleCreateCustomExercise} className="space-y-5 pt-1">
+          <div>
+            <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
+              Nom de l’exercice
+            </label>
+            <input
+              type="text"
+              required
+              value={customName}
+              onChange={(e) => setCustomName(e.target.value)}
+              placeholder="Ex: Squat Belt Machine, Pompes diamant..."
+              className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-3.5 text-white outline-none"
+            />
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
+              Groupe musculaire
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {MUSCLE_CATEGORIES.map((cat) => (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCustomCategory(cat)}
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border text-left transition ${
+                    customCategory === cat
+                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-xs font-bold uppercase text-slate-400 mb-2">
+              Équipement
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {EQUIPMENT_TYPES.map((eq) => (
+                <button
+                  key={eq}
+                  type="button"
+                  onClick={() => setCustomEquipment(eq)}
+                  className={`py-3 px-3 rounded-xl text-xs font-bold border text-left transition ${
+                    customEquipment === eq
+                      ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300'
+                      : 'bg-slate-900 border-slate-800 text-slate-400'
+                  }`}
+                >
+                  {eq}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            className="w-full py-4 rounded-2xl bg-emerald-500 active:bg-emerald-400 text-slate-950 font-extrabold text-base shadow-lg shadow-emerald-500/20"
+          >
+            Créer et ajouter à la séance
+          </button>
+        </form>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // VIEW 2: FULL-SCREEN EXERCISE CATALOG PICKER (Scrolls on the ENTIRE screen)
+  // ============================================================================
+  if (showExercisePicker) {
+    return (
+      <div className="w-full space-y-3 pb-28 animate-pop">
+        {/* Sticky Top Search & Filters Header */}
+        <div className="sticky top-0 z-30 bg-[#0b0f19]/95 backdrop-blur-md border-b border-slate-800/90 pt-1 pb-3 space-y-2.5">
+          <div className="flex items-center justify-between gap-2">
+            <h2 className="text-base font-extrabold text-white flex items-center gap-2">
+              <Dumbbell className="w-5 h-5 text-emerald-400 shrink-0" />
+              <span>Choisir un exercice ({filteredExercises.length})</span>
+            </h2>
+
+            {draft.exercises.length > 0 ? (
+              <button
+                type="button"
+                onClick={() => setShowExercisePicker(false)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-slate-200 flex items-center gap-1"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Ma séance ({draft.exercises.length})</span>
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onCancelWorkout}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-400"
+              >
+                Fermer
+              </button>
+            )}
+          </div>
+
+          {/* Search input */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Rechercher (ex: développé, squat, poulie...)"
+              className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl pl-10 pr-9 py-2.5 text-white placeholder-slate-500 outline-none"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white"
+                aria-label="Effacer la recherche"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Muscle Category Filter Pills */}
+          <div className="w-full flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+            {['Tous', ...MUSCLE_CATEGORIES].map((cat) => (
+              <button
+                key={cat}
+                type="button"
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
+                  selectedCategory === cat
+                    ? 'bg-emerald-500 text-slate-950'
+                    : 'bg-slate-900 text-slate-300 border border-slate-800'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {/* Equipment Filter Pills */}
+          <div className="w-full flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+            {['Tous', ...EQUIPMENT_TYPES].map((eq) => (
+              <button
+                key={eq}
+                type="button"
+                onClick={() => setSelectedEquipment(eq)}
+                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold shrink-0 transition ${
+                  selectedEquipment === eq
+                    ? 'bg-teal-500/20 text-teal-300 border border-teal-500/50'
+                    : 'bg-slate-950 text-slate-400 border border-slate-800/80'
+                }`}
+              >
+                {eq === 'Tous' ? 'Tout équipement' : eq}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Full-Screen Exercise List (scrolls naturally with the page) */}
+        <div className="space-y-2 pt-1">
+          <button
+            type="button"
+            onClick={() => {
+              if (selectedCategory !== 'Tous') {
+                setCustomCategory(selectedCategory as MuscleCategory);
+              }
+              if (selectedEquipment !== 'Tous') {
+                setCustomEquipment(selectedEquipment as EquipmentType);
+              }
+              if (searchQuery.trim()) {
+                setCustomName(searchQuery.trim());
+              }
+              setIsCreatingCustom(true);
+            }}
+            className="w-full p-3.5 rounded-xl bg-emerald-500/10 active:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-between text-xs font-bold transition"
+          >
+            <span className="flex items-center gap-2">
+              <Sparkles className="w-4 h-4 shrink-0" />
+              <span>Créer mon propre exercice personnalisé</span>
+            </span>
+            <Plus className="w-4 h-4 shrink-0" />
+          </button>
+
+          {filteredExercises.length === 0 ? (
+            <div className="py-12 text-center space-y-2">
+              <p className="text-sm font-bold text-slate-300">
+                Aucun exercice trouvé
+              </p>
+              <p className="text-xs text-slate-500">
+                Essaie un autre mot-clé ou crée ton propre exercice ci-dessus.
+              </p>
+            </div>
+          ) : (
+            filteredExercises.map((ex) => {
+              const goal = goals[ex.id];
+              const alreadyInWorkout = draft.exercises.some(
+                (e) => e.exerciseId === ex.id
+              );
+              return (
+                <button
+                  key={ex.id}
+                  type="button"
+                  onClick={() => handleAddExerciseToWorkout(ex)}
+                  className="w-full text-left p-3.5 rounded-xl bg-slate-900/90 active:bg-slate-800 border border-slate-800 flex items-center justify-between gap-2 transition"
+                >
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-bold text-white break-words">
+                        {ex.name}
+                      </span>
+                      {ex.isCustom && (
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold shrink-0">
+                          Perso
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-xs text-slate-400 mt-1 flex items-center flex-wrap gap-1.5">
+                      <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold">
+                        {ex.category}
+                      </span>
+                      <span>•</span>
+                      <span>{ex.equipment}</span>
+                      {goal && (
+                        <span className="text-emerald-400 font-medium">
+                          • Défi :{' '}
+                          {formatWeight(goal.targetWeight, profile.unit)} ×{' '}
+                          {goal.targetReps}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {alreadyInWorkout ? (
+                    <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                  ) : (
+                    <Plus className="w-5 h-5 text-slate-400 shrink-0" />
+                  )}
+                </button>
+              );
+            })
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // ============================================================================
+  // VIEW 3: ACTIVE WORKOUT SESSION (Scrolls naturally on the ENTIRE screen)
+  // ============================================================================
   return (
-    <div className="w-full max-w-full space-y-4 pb-36 animate-pop">
+    <div className="w-full max-w-full space-y-4 pb-32 animate-pop">
       {/* Sticky Top Session Header */}
       <div className="sticky top-0 z-30 bg-[#0b0f19]/95 backdrop-blur-md border-b border-slate-800/90 py-2.5 flex items-center justify-between gap-2">
         <div className="flex-1 min-w-0">
@@ -578,7 +854,6 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                     {goal.reason}
                   </p>
 
-                  {/* Freedom to Accept, Modify or Ignore */}
                   <div className="flex flex-wrap items-center gap-2 pt-1">
                     <button
                       type="button"
@@ -780,7 +1055,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
               </button>
             </div>
 
-            {/* Perceived Difficulty Selector (2x2 on narrow mobile, 4 cols on wider screens) */}
+            {/* Perceived Difficulty Selector */}
             <div className="pt-2 border-t border-slate-800/80">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[11px] font-semibold text-slate-400 flex items-center gap-1">
@@ -838,7 +1113,10 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
       {/* Add Exercise Button */}
       <button
         type="button"
-        onClick={() => setShowExercisePicker(true)}
+        onClick={() => {
+          setShowExercisePicker(true);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
         className="w-full py-4 rounded-2xl bg-slate-900 active:bg-slate-800 border-2 border-dashed border-emerald-500/40 text-emerald-300 font-extrabold text-sm flex items-center justify-center gap-2 transition"
       >
         <Plus className="w-5 h-5" />
@@ -884,265 +1162,6 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
           </div>
         )}
       </div>
-
-      {/* Exercise Picker Modal (100% Mobile Viewport Safe with dvh) */}
-      {showExercisePicker && (
-        <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col justify-end sm:justify-center p-0 sm:p-4">
-          <div className="bg-[#0b0f19] border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl max-w-md w-full mx-auto h-[88dvh] max-h-[88dvh] flex flex-col overflow-hidden animate-pop">
-            {/* Modal Header */}
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
-              <h3 className="text-base font-extrabold text-white flex items-center gap-2 truncate">
-                <Dumbbell className="w-5 h-5 text-emerald-400 shrink-0" />
-                <span className="truncate">
-                  {isCreatingCustom
-                    ? 'Nouvel exercice personnalisé'
-                    : `Choisir un exercice (${filteredExercises.length})`}
-                </span>
-              </h3>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsCreatingCustom(false);
-                  setShowExercisePicker(false);
-                }}
-                className="p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white shrink-0"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            {isCreatingCustom ? (
-              <form
-                onSubmit={handleCreateCustomExercise}
-                className="p-4 space-y-4 overflow-y-auto flex-1 min-h-0"
-              >
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1.5">
-                    Nom de l’exercice
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={customName}
-                    onChange={(e) => setCustomName(e.target.value)}
-                    placeholder="Ex: Squat Belt Machine, Pompes diamant..."
-                    className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-white outline-none"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1.5">
-                    Groupe musculaire
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {MUSCLE_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setCustomCategory(cat)}
-                        className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left transition ${
-                          customCategory === cat
-                            ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300'
-                            : 'bg-slate-900 border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold uppercase text-slate-400 mb-1.5">
-                    Équipement
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
-                    {EQUIPMENT_TYPES.map((eq) => (
-                      <button
-                        key={eq}
-                        type="button"
-                        onClick={() => setCustomEquipment(eq)}
-                        className={`py-2.5 px-3 rounded-xl text-xs font-bold border text-left transition ${
-                          customEquipment === eq
-                            ? 'bg-emerald-500/15 border-emerald-500 text-emerald-300'
-                            : 'bg-slate-900 border-slate-800 text-slate-400'
-                        }`}
-                      >
-                        {eq}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="pt-3 flex gap-2 pb-6">
-                  <button
-                    type="button"
-                    onClick={() => setIsCreatingCustom(false)}
-                    className="flex-1 py-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-bold text-sm"
-                  >
-                    Retour
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 py-3.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-sm"
-                  >
-                    Créer & Ajouter
-                  </button>
-                </div>
-              </form>
-            ) : (
-              <>
-                {/* Search & Filters */}
-                <div className="p-3 space-y-2.5 border-b border-slate-800/80 shrink-0 min-w-0">
-                  <div className="relative">
-                    <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                    <input
-                      type="text"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Rechercher un exercice (ex: squat, poulie...)"
-                      className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl pl-10 pr-9 py-2.5 text-white placeholder-slate-500 outline-none"
-                    />
-                    {searchQuery && (
-                      <button
-                        type="button"
-                        onClick={() => setSearchQuery('')}
-                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white"
-                        aria-label="Effacer la recherche"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Muscle Category Filter Pills */}
-                  <div className="w-full flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                    {['Tous', ...MUSCLE_CATEGORIES].map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
-                          selectedCategory === cat
-                            ? 'bg-emerald-500 text-slate-950'
-                            : 'bg-slate-900 text-slate-300 border border-slate-800'
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Equipment Filter Pills */}
-                  <div className="w-full flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-                    {['Tous', ...EQUIPMENT_TYPES].map((eq) => (
-                      <button
-                        key={eq}
-                        type="button"
-                        onClick={() => setSelectedEquipment(eq)}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold shrink-0 transition ${
-                          selectedEquipment === eq
-                            ? 'bg-teal-500/20 text-teal-300 border border-teal-500/50'
-                            : 'bg-slate-950 text-slate-400 border border-slate-800/80'
-                        }`}
-                      >
-                        {eq === 'Tous' ? 'Tout équipement' : eq}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Exercise List */}
-                <div className="flex-1 min-h-0 overflow-y-auto p-3 space-y-2 pb-8">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (selectedCategory !== 'Tous') {
-                        setCustomCategory(selectedCategory as MuscleCategory);
-                      }
-                      if (selectedEquipment !== 'Tous') {
-                        setCustomEquipment(selectedEquipment as EquipmentType);
-                      }
-                      if (searchQuery.trim()) {
-                        setCustomName(searchQuery.trim());
-                      }
-                      setIsCreatingCustom(true);
-                    }}
-                    className="w-full p-3.5 rounded-xl bg-emerald-500/10 active:bg-emerald-500/20 border border-emerald-500/30 text-emerald-300 flex items-center justify-between text-xs font-bold transition"
-                  >
-                    <span className="flex items-center gap-2">
-                      <Sparkles className="w-4 h-4 shrink-0" />
-                      <span>Créer mon propre exercice personnalisé</span>
-                    </span>
-                    <Plus className="w-4 h-4 shrink-0" />
-                  </button>
-
-                  {filteredExercises.length === 0 ? (
-                    <div className="py-10 text-center space-y-2">
-                      <p className="text-sm font-bold text-slate-300">
-                        Aucun exercice trouvé
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        Essaie un autre mot-clé ou crée ton propre exercice ci-dessus.
-                      </p>
-                    </div>
-                  ) : (
-                    filteredExercises.map((ex) => {
-                      const goal = goals[ex.id];
-                      const alreadyInWorkout = draft.exercises.some(
-                        (e) => e.exerciseId === ex.id
-                      );
-                      return (
-                        <button
-                          key={ex.id}
-                          type="button"
-                          onClick={() => handleAddExerciseToWorkout(ex)}
-                          className="w-full text-left p-3.5 rounded-xl bg-slate-900/90 active:bg-slate-800 border border-slate-800 flex items-center justify-between gap-2 transition"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-sm font-bold text-white break-words">
-                                {ex.name}
-                              </span>
-                              {ex.isCustom && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold shrink-0">
-                                  Perso
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs text-slate-400 mt-1 flex items-center flex-wrap gap-1.5">
-                              <span className="px-1.5 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold">
-                                {ex.category}
-                              </span>
-                              <span>•</span>
-                              <span>{ex.equipment}</span>
-                              {goal && (
-                                <span className="text-emerald-400 font-medium">
-                                  • Défi :{' '}
-                                  {formatWeight(
-                                    goal.targetWeight,
-                                    profile.unit
-                                  )}{' '}
-                                  × {goal.targetReps}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                          {alreadyInWorkout ? (
-                            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                          ) : (
-                            <Plus className="w-5 h-5 text-slate-400 shrink-0" />
-                          )}
-                        </button>
-                      );
-                    })
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
