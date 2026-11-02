@@ -1,0 +1,19 @@
+{
+  "name": "ScuGame — Suivi Musculation Gamifié",
+  "short_name": "ScuGame",
+  "description": "Enregistre ta séance en quelques secondes, vois tes progrès et découvre exactement quel petit défi relever la prochaine fois.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f19",
+  "theme_color": "#10b981",
+  "lang": "fr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
