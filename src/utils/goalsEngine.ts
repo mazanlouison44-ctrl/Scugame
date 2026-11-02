@@ -69,8 +69,13 @@ export function computeNextGoalForExercise(
     explicitDiff ||
     (hasFailureSet ? 'failure' : hasHardSets || repDropOff ? 'hard' : 'good');
 
-  const inc = exercise.defaultIncrementKg || (exercise.equipment === 'Poids du corps' ? 0 : 2.5);
-  const isBodyweight = exercise.equipment === 'Poids du corps' && maxWeight === 0;
+  const isZeroLoadEq =
+    exercise.equipment === 'Poids du corps' ||
+    exercise.equipment === 'Élastiques' ||
+    exercise.equipment === 'TRX';
+  const inc =
+    exercise.defaultIncrementKg || (isZeroLoadEq ? 0 : 2.5);
+  const isBodyweight = maxWeight === 0;
 
   // CASE 1: Very difficult or failure -> Prudent consolidation or slight deload
   if (effectiveDifficulty === 'failure') {

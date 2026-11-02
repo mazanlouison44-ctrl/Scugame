@@ -10,6 +10,7 @@ import {
   Dumbbell,
   RotateCcw,
   WifiOff,
+  Smartphone,
 } from 'lucide-react';
 import {
   ActiveWorkoutDraft,
@@ -24,7 +25,6 @@ import {
   getWeeklyStats,
 } from '../utils/gamification';
 import { SUGGESTED_TEMPLATES } from '../data/exercises';
-import { formatWeight } from '../utils/units';
 
 interface HomeViewProps {
   profile: UserProfile;
@@ -33,6 +33,8 @@ interface HomeViewProps {
   goals: Record<string, ExerciseGoal>;
   activeDraft: ActiveWorkoutDraft | null;
   isOnline: boolean;
+  isStandalone: boolean;
+  onAddToHomeScreen: () => void;
   onStartEmptyWorkout: () => void;
   onStartSuggestedWorkout: (title: string, exerciseIds: string[]) => void;
   onResumeDraft: () => void;
@@ -46,6 +48,8 @@ export const HomeView: React.FC<HomeViewProps> = ({
   goals,
   activeDraft,
   isOnline,
+  isStandalone,
+  onAddToHomeScreen,
   onStartEmptyWorkout,
   onStartSuggestedWorkout,
   onResumeDraft,
@@ -76,7 +80,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
     .slice(0, 4);
 
   return (
-    <div className="space-y-5 pb-28 animate-pop">
+    <div className="space-y-4 pb-28 animate-pop">
       {/* Top Bar: Greeting + Level + Offline indicator */}
       <div className="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-4 shadow-sm">
         <div className="flex items-center justify-between gap-3">
@@ -119,6 +123,30 @@ export const HomeView: React.FC<HomeViewProps> = ({
         </div>
       </div>
 
+      {/* Direct "Ajouter à l'écran d'accueil" button on Home screen (hidden if already installed in standalone mode) */}
+      {!isStandalone && (
+        <button
+          type="button"
+          onClick={onAddToHomeScreen}
+          className="w-full py-3.5 px-4 rounded-2xl bg-slate-900 hover:bg-slate-800/90 active:scale-[0.99] border border-emerald-500/40 text-left transition flex items-center justify-between gap-3 shadow-sm"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-sm font-extrabold text-white">
+                Ajouter à l’écran d’accueil
+              </div>
+              <div className="text-xs text-slate-400">
+                Installer l’application en plein écran (iPhone & Android)
+              </div>
+            </div>
+          </div>
+          <ChevronRight className="w-5 h-5 text-emerald-400 shrink-0" />
+        </button>
+      )}
+
       {/* Resume Draft Banner if a workout is currently in progress */}
       {activeDraft && (
         <div className="bg-amber-500/15 border-2 border-amber-500/50 rounded-2xl p-4 flex items-center justify-between gap-3">
@@ -153,7 +181,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
           <div className="text-left">
             <div className="leading-tight">Commencer une séance</div>
             <div className="text-xs font-semibold text-slate-900/80">
-              Séance libre ou personnalisée en quelques secondes
+              100+ exercices classés ou séance libre
             </div>
           </div>
         </div>
@@ -228,7 +256,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 suggestedTemplate.exerciseIds
               )
             }
-            className="px-3.5 py-2 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-bold text-xs shrink-0 transition flex items-center gap-1.5"
+            className="px-3.5 py-2.5 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/40 text-emerald-300 font-bold text-xs shrink-0 transition flex items-center gap-1.5"
           >
             <Play className="w-3.5 h-3.5 fill-emerald-300" />
             <span>Lancer</span>
@@ -362,7 +390,7 @@ export const HomeView: React.FC<HomeViewProps> = ({
                 </div>
                 <div className="text-sm font-extrabold text-emerald-400 mt-1">
                   {pr.weight > 0
-                    ? `${formatWeight(pr.weight, profile.unit)} × ${pr.reps}`
+                    ? `${pr.weight} ${profile.unit} × ${pr.reps}`
                     : `${pr.reps} rép`}
                 </div>
               </div>

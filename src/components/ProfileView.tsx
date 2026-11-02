@@ -140,19 +140,25 @@ export const ProfileView: React.FC<ProfileViewProps> = ({
           <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-3 text-xs text-slate-300">
             <div>
               <div className="font-extrabold text-white mb-1 flex items-center gap-1.5">
-                <span>Sur iPhone (Safari) :</span>
+                <span>Sur iPhone :</span>
               </div>
               <ol className="list-decimal list-inside space-y-1 text-slate-400">
                 <li>
-                  Appuie sur le bouton <strong className="text-slate-200">Partager</strong>{' '}
-                  <Share className="w-3.5 h-3.5 inline text-emerald-400" /> en bas de Safari.
+                  Ouvrir le site dans <strong className="text-slate-200">Safari</strong>.
                 </li>
                 <li>
-                  Choisis <strong className="text-slate-200">Sur l’écran d’accueil</strong>{' '}
+                  Toucher le bouton <strong className="text-slate-200">Partager</strong>{' '}
+                  <Share className="w-3.5 h-3.5 inline text-emerald-400" />.
+                </li>
+                <li>
+                  Choisir <strong className="text-slate-200">« Sur l’écran d’accueil »</strong>{' '}
                   <PlusSquare className="w-3.5 h-3.5 inline text-emerald-400" />.
                 </li>
                 <li>
-                  Valide en haut à droite : l’application s’ouvrira en plein écran !
+                  Si l’option est cachée, toucher <strong className="text-slate-200">« Plus »</strong> ou faire défiler la liste.
+                </li>
+                <li>
+                  Valider avec <strong className="text-slate-200">« Ajouter »</strong>.
                 </li>
               </ol>
             </div>

@@ -40,6 +40,7 @@ import { WorkoutView } from './components/WorkoutView';
 import { WorkoutSummaryView } from './components/WorkoutSummaryView';
 import { ProgressView } from './components/ProgressView';
 import { ProfileView } from './components/ProfileView';
+import { InstallPWAModal } from './components/InstallPWAModal';
 
 type TabId = 'home' | 'workout' | 'progress' | 'profile';
 
@@ -74,8 +75,16 @@ export function App() {
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
   const [syncMessage, setSyncMessage] = useState<string | null>(null);
 
-  // PWA Install Prompt
+  // PWA Install Prompt & Standalone state
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+  const [showInstallModal, setShowInstallModal] = useState<boolean>(false);
+  const [isStandalone, setIsStandalone] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return false;
+    return (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      (window.navigator as any).standalone === true
+    );
+  });
 
   const allExercises = getAllExercises(customExercises);
 
@@ -102,7 +111,14 @@ export function App() {
       e.preventDefault();
       setDeferredPrompt(e);
     };
+    const handleAppInstalled = () => {
+      setIsStandalone(true);
+      setDeferredPrompt(null);
+      setShowInstallModal(false);
+    };
+
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    window.addEventListener('appinstalled', handleAppInstalled);
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -111,8 +127,23 @@ export function App() {
         'beforeinstallprompt',
         handleBeforeInstallPrompt
       );
+      window.removeEventListener('appinstalled', handleAppInstalled);
     };
   }, []);
+
+  const handleAddToHomeScreen = async () => {
+    if (deferredPrompt) {
+      // Android / Chrome: launch native installation prompt automatically
+      deferredPrompt.prompt();
+      const choiceResult = await deferredPrompt.userChoice;
+      if (choiceResult?.outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    } else {
+      // iPhone / Safari or browsers without native prompt: open simple step-by-step help
+      setShowInstallModal(true);
+    }
+  };
 
   const handleUpdateProfile = (updated: UserProfile) => {
     setProfile(updated);
@@ -192,7 +223,11 @@ export function App() {
         completed: false,
       }));
     } else {
-      const defaultW = ex?.equipment === 'Poids du corps' ? 0 : 20;
+      const isZeroW =
+        ex?.equipment === 'Poids du corps' ||
+        ex?.equipment === 'Élastiques' ||
+        ex?.equipment === 'TRX';
+      const defaultW = isZeroW ? 0 : 20;
       initialSets = [1, 2, 3].map((num) => ({
         id: `set-${Date.now()}-${exId}-${num}`,
         setNumber: num,
@@ -422,13 +457,6 @@ export function App() {
     saveGoals(next);
   };
 
-  const handleTriggerInstallPWA = async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    await deferredPrompt.userChoice;
-    setDeferredPrompt(null);
-  };
-
   const handleExportJSON = () => {
     const payload = {
       profile,
@@ -532,6 +560,8 @@ export function App() {
             goals={goals}
             activeDraft={activeDraft}
             isOnline={isOnline}
+            isStandalone={isStandalone}
+            onAddToHomeScreen={handleAddToHomeScreen}
             onStartEmptyWorkout={handleStartEmptyWorkout}
             onStartSuggestedWorkout={handleStartSuggestedWorkout}
             onResumeDraft={() => setCurrentTab('workout')}
@@ -590,7 +620,7 @@ export function App() {
             profile={profile}
             sessions={sessions}
             canInstallPWA={Boolean(deferredPrompt)}
-            onTriggerInstallPWA={handleTriggerInstallPWA}
+            onTriggerInstallPWA={handleAddToHomeScreen}
             onUpdateProfile={handleUpdateProfile}
             onLoadDemo={() => {
               const seeded = seedDemoData(profile.name);
@@ -604,6 +634,12 @@ export function App() {
           />
         )}
       </main>
+
+      {/* PWA Installation Help Modal (iPhone & Android) */}
+      <InstallPWAModal
+        isOpen={showInstallModal}
+        onClose={() => setShowInstallModal(false)}
+      />
 
       {/* Bottom One-Handed Navigation (4 entries max as specified in Brief section 7) */}
       {!completedSessionSummary && (

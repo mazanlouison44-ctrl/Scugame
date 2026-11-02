@@ -1,13 +1,60 @@
-import { Exercise, BadgeDef } from '../types';
+import { Exercise, BadgeDef, MuscleCategory, EquipmentType } from '../types';
+
+export const MUSCLE_CATEGORIES: MuscleCategory[] = [
+  'Pectoraux',
+  'Dos',
+  'Jambes',
+  'Fessiers',
+  'Mollets',
+  'Épaules',
+  'Bras',
+  'Avant-bras',
+  'Abdominaux',
+  'Full Body',
+];
+
+export const EQUIPMENT_TYPES: EquipmentType[] = [
+  'Barre',
+  'Haltères',
+  'Machines',
+  'Poulies',
+  'Poids du corps',
+  'Kettlebell',
+  'Élastiques',
+  'TRX',
+];
 
 export const DEFAULT_EXERCISES: Exercise[] = [
-  // Pectoraux
+  // ==========================================
+  // 1. PECTORAUX (12 exercices)
+  // ==========================================
   {
     id: 'bench-press',
     name: 'Développé couché barre',
     category: 'Pectoraux',
     equipment: 'Barre',
     defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'incline-barbell-press',
+    name: 'Développé incliné barre',
+    category: 'Pectoraux',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'decline-barbell-press',
+    name: 'Développé décliné barre',
+    category: 'Pectoraux',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'flat-db-press',
+    name: 'Développé couché haltères',
+    category: 'Pectoraux',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
   },
   {
     id: 'incline-db-press',
@@ -17,6 +64,34 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     defaultIncrementKg: 2,
   },
   {
+    id: 'db-flyes',
+    name: 'Écarté couché haltères',
+    category: 'Pectoraux',
+    equipment: 'Haltères',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'chest-press-machine',
+    name: 'Chest Press guidée',
+    category: 'Pectoraux',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'pec-deck-machine',
+    name: 'Pec Deck (Butterfly)',
+    category: 'Pectoraux',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'cable-crossover',
+    name: 'Écarté poulies vis-à-vis',
+    category: 'Pectoraux',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
     id: 'push-ups',
     name: 'Pompes classiques',
     category: 'Pectoraux',
@@ -24,25 +99,77 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     defaultIncrementKg: 0,
   },
   {
-    id: 'chest-press-machine',
-    name: 'Chest Press guidée',
+    id: 'chest-dips',
+    name: 'Dips buste penché (Pectoraux)',
     category: 'Pectoraux',
-    equipment: 'Machine',
+    equipment: 'Poids du corps',
     defaultIncrementKg: 2.5,
   },
-  // Dos
+  {
+    id: 'trx-chest-press',
+    name: 'Pompes suspendues TRX',
+    category: 'Pectoraux',
+    equipment: 'TRX',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 2. DOS (13 exercices)
+  // ==========================================
+  {
+    id: 'pull-ups',
+    name: 'Tractions pronation',
+    category: 'Dos',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'chin-ups',
+    name: 'Tractions supination',
+    category: 'Dos',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
   {
     id: 'lat-pulldown',
     name: 'Tirage vertical poulie haute',
     category: 'Dos',
-    equipment: 'Poulie',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'close-grip-pulldown',
+    name: 'Tirage vertical prise serrée',
+    category: 'Dos',
+    equipment: 'Poulies',
     defaultIncrementKg: 2.5,
   },
   {
     id: 'seated-cable-row',
     name: 'Tirage horizontal poulie',
     category: 'Dos',
-    equipment: 'Poulie',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'straight-arm-pulldown',
+    name: 'Pull-over poulie haute bras tendus',
+    category: 'Dos',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'barbell-row',
+    name: 'Rowing barre buste penché',
+    category: 'Dos',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 't-bar-row',
+    name: 'Rowing T-Bar',
+    category: 'Dos',
+    equipment: 'Barre',
     defaultIncrementKg: 2.5,
   },
   {
@@ -53,26 +180,50 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     defaultIncrementKg: 2,
   },
   {
-    id: 'pull-ups',
-    name: 'Tractions pronation',
+    id: 'chest-supported-row',
+    name: 'Rowing machine avec appui thoracique',
+    category: 'Dos',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'hyperextensions',
+    name: 'Extensions lombaires au banc',
     category: 'Dos',
     equipment: 'Poids du corps',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'band-seated-row',
+    name: 'Tirage horizontal élastique',
+    category: 'Dos',
+    equipment: 'Élastiques',
     defaultIncrementKg: 0,
   },
-  // Jambes
+  {
+    id: 'trx-inverted-row',
+    name: 'Rowing inversé TRX',
+    category: 'Dos',
+    equipment: 'TRX',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 3. JAMBES (13 exercices)
+  // ==========================================
   {
     id: 'barbell-squat',
-    name: 'Squat barre',
+    name: 'Squat barre (Back Squat)',
     category: 'Jambes',
     equipment: 'Barre',
     defaultIncrementKg: 2.5,
   },
   {
-    id: 'leg-press',
-    name: 'Presse à cuisses',
+    id: 'front-squat',
+    name: 'Front Squat barre',
     category: 'Jambes',
-    equipment: 'Machine',
-    defaultIncrementKg: 5,
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
   },
   {
     id: 'romanian-deadlift',
@@ -82,20 +233,192 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     defaultIncrementKg: 2.5,
   },
   {
-    id: 'leg-extension',
-    name: 'Leg Extension',
+    id: 'leg-press',
+    name: 'Presse à cuisses inclinée',
     category: 'Jambes',
-    equipment: 'Machine',
+    equipment: 'Machines',
+    defaultIncrementKg: 5,
+  },
+  {
+    id: 'hack-squat',
+    name: 'Hack Squat guidé',
+    category: 'Jambes',
+    equipment: 'Machines',
+    defaultIncrementKg: 5,
+  },
+  {
+    id: 'leg-extension',
+    name: 'Leg Extension (Quadriceps)',
+    category: 'Jambes',
+    equipment: 'Machines',
     defaultIncrementKg: 2.5,
   },
   {
     id: 'leg-curl',
-    name: 'Leg Curl ischios',
+    name: 'Leg Curl allongé (Ischios)',
     category: 'Jambes',
-    equipment: 'Machine',
+    equipment: 'Machines',
     defaultIncrementKg: 2.5,
   },
-  // Épaules
+  {
+    id: 'seated-leg-curl',
+    name: 'Leg Curl assis',
+    category: 'Jambes',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'bulgarian-split-squat',
+    name: 'Squat bulgare haltères',
+    category: 'Jambes',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'walking-lunges',
+    name: 'Fentes marchées haltères',
+    category: 'Jambes',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'goblet-squat-kb',
+    name: 'Goblet Squat Kettlebell',
+    category: 'Jambes',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'bodyweight-squat',
+    name: 'Squat au poids du corps',
+    category: 'Jambes',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'trx-pistol-squat',
+    name: 'Squat unilatéral assisté TRX',
+    category: 'Jambes',
+    equipment: 'TRX',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 4. FESSIERS (9 exercices)
+  // ==========================================
+  {
+    id: 'barbell-hip-thrust',
+    name: 'Hip Thrust barre',
+    category: 'Fessiers',
+    equipment: 'Barre',
+    defaultIncrementKg: 5,
+  },
+  {
+    id: 'hip-thrust-machine',
+    name: 'Hip Thrust à la machine',
+    category: 'Fessiers',
+    equipment: 'Machines',
+    defaultIncrementKg: 5,
+  },
+  {
+    id: 'cable-kickback',
+    name: 'Kickback fessiers à la poulie basse',
+    category: 'Fessiers',
+    equipment: 'Poulies',
+    defaultIncrementKg: 1.25,
+  },
+  {
+    id: 'cable-pull-through',
+    name: 'Pull-Through poulie basse',
+    category: 'Fessiers',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'abductor-machine',
+    name: 'Machine à abducteurs',
+    category: 'Fessiers',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'sumo-squat-db',
+    name: 'Squat Sumo haltère',
+    category: 'Fessiers',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'step-up-db',
+    name: 'Montées sur banc (Step-up) haltères',
+    category: 'Fessiers',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'glute-bridge-bw',
+    name: 'Pont fessier (Glute Bridge)',
+    category: 'Fessiers',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'band-lateral-walk',
+    name: 'Marche latérale avec élastique (Monster Walk)',
+    category: 'Fessiers',
+    equipment: 'Élastiques',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 5. MOLLETS (6 exercices)
+  // ==========================================
+  {
+    id: 'standing-calf-raise',
+    name: 'Mollets debout à la machine',
+    category: 'Mollets',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'seated-calf-raise',
+    name: 'Mollets assis à la machine',
+    category: 'Mollets',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'leg-press-calf-raise',
+    name: 'Extensions mollets à la presse',
+    category: 'Mollets',
+    equipment: 'Machines',
+    defaultIncrementKg: 5,
+  },
+  {
+    id: 'db-calf-raise',
+    name: 'Extensions mollets debout avec haltères',
+    category: 'Mollets',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'barbell-calf-raise',
+    name: 'Extensions mollets debout barre',
+    category: 'Mollets',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'single-leg-bw-calf',
+    name: 'Mollets debout sur une jambe',
+    category: 'Mollets',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 6. ÉPAULES (11 exercices)
+  // ==========================================
   {
     id: 'overhead-press',
     name: 'Développé militaire haltères',
@@ -104,34 +427,342 @@ export const DEFAULT_EXERCISES: Exercise[] = [
     defaultIncrementKg: 2,
   },
   {
+    id: 'barbell-ohp',
+    name: 'Développé militaire barre debout',
+    category: 'Épaules',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'arnold-press',
+    name: 'Développé Arnold haltères',
+    category: 'Épaules',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'shoulder-press-machine',
+    name: 'Développé épaules guidé (Machine)',
+    category: 'Épaules',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
     id: 'lateral-raises',
-    name: 'Élévations latérales',
+    name: 'Élévations latérales haltères',
     category: 'Épaules',
     equipment: 'Haltères',
     defaultIncrementKg: 1,
   },
-  // Bras
+  {
+    id: 'cable-lateral-raise',
+    name: 'Élévations latérales à la poulie',
+    category: 'Épaules',
+    equipment: 'Poulies',
+    defaultIncrementKg: 1.25,
+  },
+  {
+    id: 'front-raises-db',
+    name: 'Élévations frontales haltères',
+    category: 'Épaules',
+    equipment: 'Haltères',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'rear-delt-fly-db',
+    name: 'Oiseau buste penché haltères',
+    category: 'Épaules',
+    equipment: 'Haltères',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'face-pull',
+    name: 'Face Pull à la poulie haute',
+    category: 'Épaules',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'kb-shoulder-press',
+    name: 'Press épaules unilatéral Kettlebell',
+    category: 'Épaules',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'band-pull-apart',
+    name: 'Band Pull-Apart (Arrière d’épaule)',
+    category: 'Épaules',
+    equipment: 'Élastiques',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 7. BRAS — BICEPS & TRICEPS (13 exercices)
+  // ==========================================
   {
     id: 'dumbbell-curl',
-    name: 'Curl biceps haltères',
+    name: 'Curl biceps haltères alterné',
     category: 'Bras',
     equipment: 'Haltères',
     defaultIncrementKg: 1,
   },
   {
-    id: 'triceps-pushdown',
-    name: 'Extension triceps poulie',
+    id: 'hammer-curl',
+    name: 'Curl marteau haltères',
     category: 'Bras',
-    equipment: 'Poulie',
+    equipment: 'Haltères',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'incline-db-curl',
+    name: 'Curl incliné haltères',
+    category: 'Bras',
+    equipment: 'Haltères',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'barbell-curl',
+    name: 'Curl biceps barre droite ou EZ',
+    category: 'Bras',
+    equipment: 'Barre',
     defaultIncrementKg: 2.5,
   },
-  // Abdos
+  {
+    id: 'preacher-curl-machine',
+    name: 'Curl pupitre Larry Scott (Machine)',
+    category: 'Bras',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'cable-bicep-curl',
+    name: 'Curl biceps à la poulie basse',
+    category: 'Bras',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'triceps-pushdown',
+    name: 'Extension triceps poulie haute (Corde)',
+    category: 'Bras',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'overhead-cable-triceps',
+    name: 'Extension triceps poulie au-dessus de la tête',
+    category: 'Bras',
+    equipment: 'Poulies',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'skull-crushers',
+    name: 'Barre au front (Skull Crushers)',
+    category: 'Bras',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'close-grip-bench',
+    name: 'Développé couché prise serrée',
+    category: 'Bras',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'db-overhead-triceps',
+    name: 'Extension triceps haltère à deux mains',
+    category: 'Bras',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'bench-dips',
+    name: 'Dips entre deux bancs (Triceps)',
+    category: 'Bras',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'trx-biceps-triceps',
+    name: 'Curl ou Extension triceps au TRX',
+    category: 'Bras',
+    equipment: 'TRX',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 8. AVANT-BRAS (6 exercices)
+  // ==========================================
+  {
+    id: 'wrist-curl-barbell',
+    name: 'Flexion des poignets barre (Avant-bras)',
+    category: 'Avant-bras',
+    equipment: 'Barre',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'reverse-wrist-curl',
+    name: 'Extension des poignets haltères',
+    category: 'Avant-bras',
+    equipment: 'Haltères',
+    defaultIncrementKg: 1,
+  },
+  {
+    id: 'reverse-barbell-curl',
+    name: 'Curl inversé pronation barre EZ',
+    category: 'Avant-bras',
+    equipment: 'Barre',
+    defaultIncrementKg: 1.25,
+  },
+  {
+    id: 'farmers-walk-db',
+    name: 'Marche du fermier (Farmer Walk) haltères',
+    category: 'Avant-bras',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'farmers-walk-kb',
+    name: 'Marche du fermier Kettlebell',
+    category: 'Avant-bras',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'dead-hang',
+    name: 'Suspension passive à la barre (Grip)',
+    category: 'Avant-bras',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 9. ABDOMINAUX (9 exercices)
+  // ==========================================
   {
     id: 'cable-crunch',
-    name: 'Crunch poulie haute',
-    category: 'Abdos',
-    equipment: 'Poulie',
+    name: 'Crunch à la poulie haute',
+    category: 'Abdominaux',
+    equipment: 'Poulies',
     defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'ab-crunch-machine',
+    name: 'Crunch abdominal à la machine',
+    category: 'Abdominaux',
+    equipment: 'Machines',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'hanging-leg-raise',
+    name: 'Relevé de jambes suspendu à la barre',
+    category: 'Abdominaux',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'floor-crunch',
+    name: 'Crunch au sol',
+    category: 'Abdominaux',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'plank-core',
+    name: 'Gainage planche abdominale',
+    category: 'Abdominaux',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'bicycle-crunch',
+    name: 'Crunch bicyclette (Obliques)',
+    category: 'Abdominaux',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'russian-twist-kb',
+    name: 'Russian Twist avec Kettlebell',
+    category: 'Abdominaux',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'pallof-press-band',
+    name: 'Pallof Press anti-rotation élastique',
+    category: 'Abdominaux',
+    equipment: 'Élastiques',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'trx-pike',
+    name: 'TRX Pike / Mountain Climber suspendu',
+    category: 'Abdominaux',
+    equipment: 'TRX',
+    defaultIncrementKg: 0,
+  },
+
+  // ==========================================
+  // 10. FULL BODY (8 exercices)
+  // ==========================================
+  {
+    id: 'conventional-deadlift',
+    name: 'Soulevé de terre classique (Deadlift)',
+    category: 'Full Body',
+    equipment: 'Barre',
+    defaultIncrementKg: 5,
+  },
+  {
+    id: 'barbell-thruster',
+    name: 'Thruster barre (Squat + Développé)',
+    category: 'Full Body',
+    equipment: 'Barre',
+    defaultIncrementKg: 2.5,
+  },
+  {
+    id: 'db-thruster',
+    name: 'Thruster haltères',
+    category: 'Full Body',
+    equipment: 'Haltères',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'kb-swing',
+    name: 'Kettlebell Swing',
+    category: 'Full Body',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'kb-clean-and-press',
+    name: 'Clean & Press Kettlebell',
+    category: 'Full Body',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'turkish-get-up',
+    name: 'Relevé turc (Turkish Get-Up) Kettlebell',
+    category: 'Full Body',
+    equipment: 'Kettlebell',
+    defaultIncrementKg: 2,
+  },
+  {
+    id: 'burpees-bw',
+    name: 'Burpees dynamiques',
+    category: 'Full Body',
+    equipment: 'Poids du corps',
+    defaultIncrementKg: 0,
+  },
+  {
+    id: 'band-thruster',
+    name: 'Squat Press avec élastique',
+    category: 'Full Body',
+    equipment: 'Élastiques',
+    defaultIncrementKg: 0,
   },
 ];
 
@@ -205,12 +836,24 @@ export const SUGGESTED_TEMPLATES = [
     id: 'upper-body',
     title: 'Haut du Corps (Push / Pull)',
     subtitle: 'Pectoraux, dos, épaules et bras',
-    exerciseIds: ['bench-press', 'seated-cable-row', 'incline-db-press', 'lateral-raises', 'dumbbell-curl'],
+    exerciseIds: [
+      'bench-press',
+      'seated-cable-row',
+      'incline-db-press',
+      'lateral-raises',
+      'dumbbell-curl',
+    ],
   },
   {
     id: 'lower-body',
-    title: 'Bas du Corps & Gainage',
-    subtitle: 'Quadriceps, ischios, fessiers et abdos',
-    exerciseIds: ['barbell-squat', 'romanian-deadlift', 'leg-extension', 'leg-curl', 'cable-crunch'],
+    title: 'Bas du Corps, Fessiers & Abdos',
+    subtitle: 'Quadriceps, ischios, fessiers, mollets et abdos',
+    exerciseIds: [
+      'barbell-squat',
+      'barbell-hip-thrust',
+      'leg-extension',
+      'standing-calf-raise',
+      'cable-crunch',
+    ],
   },
 ];

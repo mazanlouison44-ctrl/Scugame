@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Plus,
   Minus,
@@ -35,6 +35,7 @@ import {
   toInternalKg,
 } from '../utils/units';
 import { getLastExercisePerformance } from '../utils/goalsEngine';
+import { MUSCLE_CATEGORIES, EQUIPMENT_TYPES } from '../data/exercises';
 
 interface WorkoutViewProps {
   draft: ActiveWorkoutDraft;
@@ -47,24 +48,6 @@ interface WorkoutViewProps {
   onFinishWorkout: (finalDraft: ActiveWorkoutDraft, elapsedSeconds: number) => void;
   onCancelWorkout: () => void;
 }
-
-const CATEGORIES: MuscleCategory[] = [
-  'Pectoraux',
-  'Dos',
-  'Jambes',
-  'Épaules',
-  'Bras',
-  'Abdos',
-  'Full Body',
-];
-
-const EQUIPMENTS: EquipmentType[] = [
-  'Barre',
-  'Haltères',
-  'Machine',
-  'Poulie',
-  'Poids du corps',
-];
 
 const DIFFICULTY_OPTIONS: {
   value: DifficultyLevel;
@@ -98,6 +81,20 @@ const DIFFICULTY_OPTIONS: {
   },
 ];
 
+// Fast accent-insensitive normalization for instant search across 100+ exercises
+function normalizeSearch(str: string): string {
+  return str
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+}
+
+function isZeroWeightEquipment(eq: EquipmentType): boolean {
+  return (
+    eq === 'Poids du corps' || eq === 'Élastiques' || eq === 'TRX'
+  );
+}
+
 export const WorkoutView: React.FC<WorkoutViewProps> = ({
   draft,
   profile,
@@ -125,6 +122,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
   );
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('Tous');
+  const [selectedEquipment, setSelectedEquipment] = useState<string>('Tous');
 
   // Custom Exercise Creation Sub-modal
   const [isCreatingCustom, setIsCreatingCustom] = useState(false);
@@ -181,7 +179,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
         completed: false,
       }));
     } else {
-      const defaultW = ex.equipment === 'Poids du corps' ? 0 : 20;
+      const defaultW = isZeroWeightEquipment(ex.equipment) ? 0 : 20;
       initialSets = [1, 2, 3].map((num) => ({
         id: `set-${Date.now()}-${num}`,
         setNumber: num,
@@ -215,12 +213,11 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
       name: customName.trim(),
       category: customCategory,
       equipment: customEquipment,
-      defaultIncrementKg:
-        customEquipment === 'Poids du corps'
-          ? 0
-          : customEquipment === 'Haltères'
-          ? 2
-          : 2.5,
+      defaultIncrementKg: isZeroWeightEquipment(customEquipment)
+        ? 0
+        : customEquipment === 'Haltères' || customEquipment === 'Kettlebell'
+        ? 2
+        : 2.5,
       isCustom: true,
     };
     onAddCustomExercise(newEx);
@@ -376,14 +373,22 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
     0
   );
 
-  const filteredExercises = exercises.filter((ex) => {
-    const matchesCat =
-      selectedCategory === 'Tous' || ex.category === selectedCategory;
-    const matchesSearch = ex.name
-      .toLowerCase()
-      .includes(searchQuery.toLowerCase());
-    return matchesCat && matchesSearch;
-  });
+  // Memoized fast filtering for the 100+ exercises catalog
+  const filteredExercises = useMemo(() => {
+    const q = normalizeSearch(searchQuery.trim());
+    return exercises.filter((ex) => {
+      const matchesCat =
+        selectedCategory === 'Tous' || ex.category === selectedCategory;
+      const matchesEq =
+        selectedEquipment === 'Tous' || ex.equipment === selectedEquipment;
+      if (!matchesCat || !matchesEq) return false;
+      if (!q) return true;
+      const haystack = normalizeSearch(
+        `${ex.name} ${ex.category} ${ex.equipment}`
+      );
+      return haystack.includes(q);
+    });
+  }, [exercises, searchQuery, selectedCategory, selectedEquipment]);
 
   return (
     <div className="space-y-4 pb-36 animate-pop">
@@ -834,7 +839,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
         className="w-full py-4 rounded-2xl bg-slate-900 hover:bg-slate-800 border-2 border-dashed border-emerald-500/40 text-emerald-300 font-extrabold text-sm flex items-center justify-center gap-2 transition"
       >
         <Plus className="w-5 h-5" />
-        <span>Ajouter un exercice</span>
+        <span>Ajouter un exercice ({exercises.length} disponibles)</span>
       </button>
 
       {/* Auto-rest toggle + Cancel Workout */}
@@ -877,10 +882,10 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
         )}
       </div>
 
-      {/* Exercise Picker Modal */}
+      {/* Exercise Picker Modal (100+ Exercises, Fast Search, Muscle & Equipment Filters) */}
       {showExercisePicker && (
         <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col justify-end sm:justify-center p-0 sm:p-4">
-          <div className="bg-[#0b0f19] border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl max-w-md w-full mx-auto h-[85vh] flex flex-col overflow-hidden animate-pop">
+          <div className="bg-[#0b0f19] border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl max-w-md w-full mx-auto h-[88vh] flex flex-col overflow-hidden animate-pop">
             {/* Modal Header */}
             <div className="p-4 border-b border-slate-800 flex items-center justify-between">
               <h3 className="text-base font-extrabold text-white flex items-center gap-2">
@@ -888,7 +893,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                 <span>
                   {isCreatingCustom
                     ? 'Nouvel exercice personnalisé'
-                    : 'Choisir un exercice'}
+                    : `Choisir un exercice (${filteredExercises.length})`}
                 </span>
               </h3>
               <button
@@ -917,7 +922,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                     required
                     value={customName}
                     onChange={(e) => setCustomName(e.target.value)}
-                    placeholder="Ex: Hip Thrust barre, Dips lestés..."
+                    placeholder="Ex: Squat Belt Machine, Pompes diamant..."
                     className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-4 py-3 text-sm text-white outline-none"
                   />
                 </div>
@@ -927,7 +932,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                     Groupe musculaire
                   </label>
                   <div className="grid grid-cols-2 gap-2">
-                    {CATEGORIES.map((cat) => (
+                    {MUSCLE_CATEGORIES.map((cat) => (
                       <button
                         key={cat}
                         type="button"
@@ -949,7 +954,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                     Équipement
                   </label>
                   <div className="grid grid-cols-2 gap-2">
-                    {EQUIPMENTS.map((eq) => (
+                    {EQUIPMENT_TYPES.map((eq) => (
                       <button
                         key={eq}
                         type="button"
@@ -970,13 +975,13 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                   <button
                     type="button"
                     onClick={() => setIsCreatingCustom(false)}
-                    className="flex-1 py-3 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-bold text-sm"
+                    className="flex-1 py-3.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 font-bold text-sm"
                   >
                     Retour
                   </button>
                   <button
                     type="submit"
-                    className="flex-1 py-3 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-sm"
+                    className="flex-1 py-3.5 rounded-xl bg-emerald-500 text-slate-950 font-extrabold text-sm"
                   >
                     Créer & Ajouter
                   </button>
@@ -984,7 +989,7 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
               </form>
             ) : (
               <>
-                {/* Search & Filter */}
+                {/* Search & Filters */}
                 <div className="p-3 space-y-2.5 border-b border-slate-800/80">
                   <div className="relative">
                     <Search className="w-4 h-4 text-slate-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -992,13 +997,24 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      placeholder="Rechercher un exercice..."
-                      className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl pl-10 pr-4 py-2.5 text-sm text-white placeholder-slate-500 outline-none"
+                      placeholder="Rechercher parmi 100+ exercices (ex: squat, poulie, trx...)"
+                      className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl pl-10 pr-9 py-2.5 text-sm text-white placeholder-slate-500 outline-none"
                     />
+                    {searchQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white"
+                        aria-label="Effacer la recherche"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
                   </div>
 
-                  <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
-                    {['Tous', ...CATEGORIES].map((cat) => (
+                  {/* Muscle Category Filter Pills */}
+                  <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                    {['Tous', ...MUSCLE_CATEGORIES].map((cat) => (
                       <button
                         key={cat}
                         type="button"
@@ -1006,10 +1022,28 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                         className={`px-3 py-1.5 rounded-xl text-xs font-bold shrink-0 transition ${
                           selectedCategory === cat
                             ? 'bg-emerald-500 text-slate-950'
-                            : 'bg-slate-900 text-slate-400 border border-slate-800'
+                            : 'bg-slate-900 text-slate-300 border border-slate-800'
                         }`}
                       >
                         {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Equipment Filter Pills */}
+                  <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+                    {['Tous', ...EQUIPMENT_TYPES].map((eq) => (
+                      <button
+                        key={eq}
+                        type="button"
+                        onClick={() => setSelectedEquipment(eq)}
+                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold shrink-0 transition ${
+                          selectedEquipment === eq
+                            ? 'bg-teal-500/20 text-teal-300 border border-teal-500/50'
+                            : 'bg-slate-950 text-slate-400 border border-slate-800/80'
+                        }`}
+                      >
+                        {eq === 'Tous' ? 'Tout équipement' : eq}
                       </button>
                     ))}
                   </div>
@@ -1019,58 +1053,87 @@ export const WorkoutView: React.FC<WorkoutViewProps> = ({
                 <div className="flex-1 overflow-y-auto p-3 space-y-2">
                   <button
                     type="button"
-                    onClick={() => setIsCreatingCustom(true)}
-                    className="w-full p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-between text-xs font-bold transition"
+                    onClick={() => {
+                      if (selectedCategory !== 'Tous') {
+                        setCustomCategory(selectedCategory as MuscleCategory);
+                      }
+                      if (selectedEquipment !== 'Tous') {
+                        setCustomEquipment(selectedEquipment as EquipmentType);
+                      }
+                      if (searchQuery.trim()) {
+                        setCustomName(searchQuery.trim());
+                      }
+                      setIsCreatingCustom(true);
+                    }}
+                    className="w-full p-3.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 flex items-center justify-between text-xs font-bold transition"
                   >
                     <span className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4" />
-                      Créer un exercice personnalisé
+                      Créer mon propre exercice personnalisé
                     </span>
                     <Plus className="w-4 h-4" />
                   </button>
 
-                  {filteredExercises.map((ex) => {
-                    const goal = goals[ex.id];
-                    const alreadyInWorkout = draft.exercises.some(
-                      (e) => e.exerciseId === ex.id
-                    );
-                    return (
-                      <button
-                        key={ex.id}
-                        type="button"
-                        onClick={() => handleAddExerciseToWorkout(ex)}
-                        className="w-full text-left p-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 flex items-center justify-between gap-2 transition"
-                      >
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-bold text-white truncate">
-                              {ex.name}
-                            </span>
-                            {ex.isCustom && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">
-                                Perso
+                  {filteredExercises.length === 0 ? (
+                    <div className="py-10 text-center space-y-2">
+                      <p className="text-sm font-bold text-slate-300">
+                        Aucun exercice trouvé
+                      </p>
+                      <p className="text-xs text-slate-500">
+                        Essaie un autre mot-clé ou crée ton propre exercice ci-dessus.
+                      </p>
+                    </div>
+                  ) : (
+                    filteredExercises.map((ex) => {
+                      const goal = goals[ex.id];
+                      const alreadyInWorkout = draft.exercises.some(
+                        (e) => e.exerciseId === ex.id
+                      );
+                      return (
+                        <button
+                          key={ex.id}
+                          type="button"
+                          onClick={() => handleAddExerciseToWorkout(ex)}
+                          className="w-full text-left p-3.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 active:scale-[0.99] border border-slate-800 flex items-center justify-between gap-2 transition"
+                        >
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-sm font-bold text-white truncate">
+                                {ex.name}
                               </span>
-                            )}
-                          </div>
-                          <div className="text-xs text-slate-400 mt-0.5 flex items-center gap-2">
-                            <span>
-                              {ex.category} • {ex.equipment}
-                            </span>
-                            {goal && (
-                              <span className="text-emerald-400 font-medium">
-                                • Objectif : {formatWeight(goal.targetWeight, profile.unit)} × {goal.targetReps}
+                              {ex.isCustom && (
+                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold">
+                                  Perso
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-slate-400 mt-0.5 flex items-center flex-wrap gap-1.5">
+                              <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold">
+                                {ex.category}
                               </span>
-                            )}
+                              <span>•</span>
+                              <span>{ex.equipment}</span>
+                              {goal && (
+                                <span className="text-emerald-400 font-medium">
+                                  • Objectif :{' '}
+                                  {formatWeight(
+                                    goal.targetWeight,
+                                    profile.unit
+                                  )}{' '}
+                                  × {goal.targetReps}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                        </div>
-                        {alreadyInWorkout ? (
-                          <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
-                        ) : (
-                          <Plus className="w-5 h-5 text-slate-400 shrink-0" />
-                        )}
-                      </button>
-                    );
-                  })}
+                          {alreadyInWorkout ? (
+                            <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />
+                          ) : (
+                            <Plus className="w-5 h-5 text-slate-400 shrink-0" />
+                          )}
+                        </button>
+                      );
+                    })
+                  )}
                 </div>
               </>
             )}

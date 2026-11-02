@@ -46,7 +46,17 @@ export function loadCustomExercises(): Exercise[] {
   try {
     const raw = localStorage.getItem(KEYS.EXERCISES);
     if (!raw) return [];
-    return JSON.parse(raw);
+    const parsed: any[] = JSON.parse(raw);
+    return parsed.map((ex) => ({
+      ...ex,
+      category: ex.category === 'Abdos' ? 'Abdominaux' : ex.category,
+      equipment:
+        ex.equipment === 'Machine'
+          ? 'Machines'
+          : ex.equipment === 'Poulie'
+          ? 'Poulies'
+          : ex.equipment,
+    }));
   } catch {
     return [];
   }

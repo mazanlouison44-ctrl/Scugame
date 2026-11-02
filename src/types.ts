@@ -4,17 +4,23 @@ export type MuscleCategory =
   | 'Pectoraux'
   | 'Dos'
   | 'Jambes'
+  | 'Fessiers'
+  | 'Mollets'
   | 'Épaules'
   | 'Bras'
-  | 'Abdos'
+  | 'Avant-bras'
+  | 'Abdominaux'
   | 'Full Body';
 
 export type EquipmentType =
   | 'Barre'
   | 'Haltères'
-  | 'Machine'
-  | 'Poulie'
-  | 'Poids du corps';
+  | 'Machines'
+  | 'Poulies'
+  | 'Poids du corps'
+  | 'Kettlebell'
+  | 'Élastiques'
+  | 'TRX';
 
 export type DifficultyLevel = 'easy' | 'good' | 'hard' | 'failure';
 
