@@ -527,9 +527,9 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col">
+    <div className="min-h-[100dvh] w-full max-w-[100vw] overflow-x-hidden bg-[#0b0f19] text-slate-100 flex flex-col">
       {/* Main Mobile Container */}
-      <main className="w-full max-w-md mx-auto px-4 pt-4 flex-1">
+      <main className="w-full max-w-md mx-auto px-3.5 sm:px-4 safe-top flex-1 min-w-0">
         {syncMessage && (
           <div className="mb-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-2 animate-pop">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -643,8 +643,8 @@ export function App() {
 
       {/* Bottom One-Handed Navigation (4 entries max as specified in Brief section 7) */}
       {!completedSessionSummary && (
-        <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#0b0f19]/95 backdrop-blur-lg border-t border-slate-800/90">
-          <div className="max-w-md mx-auto grid grid-cols-4 px-2 py-1.5">
+        <nav className="fixed bottom-0 inset-x-0 z-40 bg-[#0b0f19]/95 backdrop-blur-lg border-t border-slate-800/90 safe-bottom">
+          <div className="max-w-md mx-auto grid grid-cols-4 px-2 pt-1.5">
             <button
               type="button"
               onClick={() => setCurrentTab('home')}

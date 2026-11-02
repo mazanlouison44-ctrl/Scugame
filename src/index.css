@@ -1,20 +1,52 @@
 @import "tailwindcss";
 
 @layer base {
-  html, body {
+  *, *::before, *::after {
+    box-sizing: border-box;
+  }
+
+  html, body, #root {
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
     background-color: #0b0f19;
     color: #f1f5f9;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     -webkit-tap-highlight-color: transparent;
     overscroll-behavior-y: none;
+    touch-action: manipulation;
   }
+
+  /* Prevent iOS Safari auto-zoom when tapping inputs (requires >= 16px) */
+  input, select, textarea {
+    font-size: 16px !important;
+  }
+
+  /* Remove default browser number spinners on mobile/desktop */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
+}
+
+/* Safe area padding for iPhone Notch / Dynamic Island & Home Bar */
+.safe-top {
+  padding-top: max(0.75rem, env(safe-area-inset-top));
+}
+
+.safe-bottom {
+  padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
 }
 
 /* Custom subtle animations for gamification & mobile feel */
 @keyframes popIn {
   0% {
     opacity: 0;
-    transform: scale(0.94) translateY(6px);
+    transform: scale(0.96) translateY(4px);
   }
   100% {
     opacity: 1;
@@ -32,7 +64,7 @@
 }
 
 .animate-pop {
-  animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: popIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-pulse-glow {

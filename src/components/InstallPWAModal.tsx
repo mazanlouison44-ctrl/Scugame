@@ -14,26 +14,26 @@ export const InstallPWAModal: React.FC<InstallPWAModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-      <div className="bg-[#0b0f19] border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl max-w-md w-full p-5 space-y-5 animate-pop">
+      <div className="bg-[#0b0f19] border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl max-w-md w-full max-h-[90dvh] overflow-y-auto p-5 safe-bottom space-y-4 animate-pop">
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             <div className="w-11 h-11 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400 shrink-0">
               <Smartphone className="w-6 h-6" />
             </div>
-            <div>
+            <div className="min-w-0">
               <h3 className="text-base font-extrabold text-white">
                 Ajouter à l’écran d’accueil
               </h3>
               <p className="text-xs text-slate-400">
-                Ouvre ScuGame en plein écran comme une vraie application
+                Ouvre ScuGame en plein écran comme une application
               </p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white"
+            className="p-2 rounded-xl bg-slate-900 text-slate-400 hover:text-white shrink-0"
             aria-label="Fermer"
           >
             <X className="w-5 h-5" />
@@ -116,7 +116,7 @@ export const InstallPWAModal: React.FC<InstallPWAModalProps> = ({
         <button
           type="button"
           onClick={onClose}
-          className="w-full py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-sm transition"
+          className="w-full py-3.5 rounded-2xl bg-emerald-500 active:bg-emerald-400 text-slate-950 font-extrabold text-sm transition"
         >
           J’ai compris
         </button>

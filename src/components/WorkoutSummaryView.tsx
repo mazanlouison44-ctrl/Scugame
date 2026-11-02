@@ -52,7 +52,6 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
   const levelInfo = getLevelInfo(profile.xp);
 
   useEffect(() => {
-    // Discreet, short celebration on workout completion, PR, or level up
     try {
       confetti({
         particleCount: leveledUp || session.prsAchieved.length > 0 ? 55 : 28,
@@ -62,7 +61,7 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
         disableForReducedMotion: true,
       });
     } catch {
-      // Ignore if canvas-confetti fails in headless environments
+      // Ignore if canvas-confetti fails
     }
   }, [leveledUp, session.prsAchieved.length]);
 
@@ -109,9 +108,9 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
   };
 
   return (
-    <div className="space-y-5 pb-28 animate-pop">
+    <div className="w-full max-w-full space-y-5 pb-28 animate-pop">
       {/* Hero Banner */}
-      <div className="bg-gradient-to-br from-emerald-500/20 via-slate-900 to-slate-900 border border-emerald-500/40 rounded-3xl p-6 text-center space-y-3">
+      <div className="bg-gradient-to-br from-emerald-500/20 via-slate-900 to-slate-900 border border-emerald-500/40 rounded-3xl p-5 text-center space-y-3">
         <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center mx-auto text-emerald-400 animate-pulse-glow">
           <CheckCircle2 className="w-8 h-8" />
         </div>
@@ -119,37 +118,39 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
           <span className="text-xs font-extrabold uppercase tracking-wider text-emerald-400">
             Séance enregistrée
           </span>
-          <h1 className="text-2xl font-extrabold text-white mt-0.5">
+          <h1 className="text-xl sm:text-2xl font-extrabold text-white mt-0.5">
             Bravo, {profile.name} !
           </h1>
-          <p className="text-xs text-slate-300 mt-1">{session.title}</p>
+          <p className="text-xs text-slate-300 mt-1 truncate">
+            {session.title}
+          </p>
         </div>
 
         {/* Key Stats */}
         <div className="grid grid-cols-3 gap-2 pt-2">
-          <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5">
+          <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 min-w-0">
             <div className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-              <Clock className="w-3 h-3" /> Durée
+              <Clock className="w-3 h-3 shrink-0" /> Durée
             </div>
-            <div className="text-sm font-extrabold text-white mt-0.5">
+            <div className="text-xs sm:text-sm font-extrabold text-white mt-0.5 truncate">
               {formatDuration(session.durationSeconds)}
             </div>
           </div>
 
-          <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5">
+          <div className="bg-slate-950/80 border border-slate-800 rounded-xl p-2.5 min-w-0">
             <div className="text-[11px] text-slate-400 flex items-center justify-center gap-1">
-              <Dumbbell className="w-3 h-3" /> Séries
+              <Dumbbell className="w-3 h-3 shrink-0" /> Séries
             </div>
-            <div className="text-sm font-extrabold text-white mt-0.5">
+            <div className="text-xs sm:text-sm font-extrabold text-white mt-0.5 truncate">
               {totalSets} validées
             </div>
           </div>
 
-          <div className="bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-2.5">
+          <div className="bg-emerald-500/15 border border-emerald-500/30 rounded-xl p-2.5 min-w-0">
             <div className="text-[11px] text-emerald-300 flex items-center justify-center gap-1">
-              <Sparkles className="w-3 h-3" /> Expérience
+              <Sparkles className="w-3 h-3 shrink-0" /> XP
             </div>
-            <div className="text-sm font-extrabold text-emerald-400 mt-0.5">
+            <div className="text-xs sm:text-sm font-extrabold text-emerald-400 mt-0.5 truncate">
               +{session.xpEarned} XP
             </div>
           </div>
@@ -158,18 +159,18 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
 
       {/* Level Up & XP Bar */}
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-2.5">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full bg-emerald-500 text-slate-950 text-xs font-extrabold">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
+            <span className="px-2.5 py-1 rounded-full bg-emerald-500 text-slate-950 text-xs font-extrabold shrink-0">
               Niveau {levelInfo.level}
             </span>
-            <span className="text-sm font-bold text-white">
+            <span className="text-sm font-bold text-white truncate">
               {levelInfo.title}
             </span>
           </div>
           {leveledUp && (
-            <span className="text-xs font-extrabold text-amber-400 animate-bounce">
-              Niveau supérieur !
+            <span className="text-xs font-extrabold text-amber-400 animate-bounce shrink-0">
+              Niveau +1 !
             </span>
           )}
         </div>
@@ -191,7 +192,7 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
       {newlyUnlockedBadges.length > 0 && (
         <div className="bg-amber-500/10 border border-amber-500/30 rounded-2xl p-4 space-y-2.5">
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-amber-300">
-            <Award className="w-4 h-4" />
+            <Award className="w-4 h-4 shrink-0" />
             <span>Nouveau(x) badge(s) débloqué(s) !</span>
           </div>
           <div className="space-y-2">
@@ -201,9 +202,9 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
               return (
                 <div
                   key={bId}
-                  className="bg-slate-950/80 border border-amber-500/30 rounded-xl p-3 flex items-center justify-between"
+                  className="bg-slate-950/80 border border-amber-500/30 rounded-xl p-3 flex items-center justify-between gap-2"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <div className="text-sm font-bold text-white">
                       {badge.title}
                     </div>
@@ -211,7 +212,7 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
                       {badge.description}
                     </div>
                   </div>
-                  <span className="text-xs font-extrabold text-amber-400 shrink-0 ml-2">
+                  <span className="text-xs font-extrabold text-amber-400 shrink-0">
                     +{badge.xpBonus} XP
                   </span>
                 </div>
@@ -225,7 +226,7 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
       {session.prsAchieved.length > 0 && (
         <div className="bg-slate-900/90 border border-amber-500/40 rounded-2xl p-4 space-y-3">
           <div className="flex items-center gap-2 text-sm font-extrabold text-amber-400">
-            <Trophy className="w-4 h-4" />
+            <Trophy className="w-4 h-4 shrink-0" />
             <span>
               {session.prsAchieved.length} Record(s) Personnel(s) Battu(s) !
             </span>
@@ -234,17 +235,17 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
             {session.prsAchieved.map((pr) => (
               <div
                 key={pr.id}
-                className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between"
+                className="bg-slate-950 border border-slate-800 rounded-xl p-3 flex items-center justify-between gap-2"
               >
-                <div>
-                  <div className="text-xs font-bold text-white">
+                <div className="min-w-0">
+                  <div className="text-xs font-bold text-white truncate">
                     {pr.exerciseName}
                   </div>
                   <div className="text-[11px] text-slate-400">
                     Nouvelle référence enregistrée
                   </div>
                 </div>
-                <div className="text-sm font-extrabold text-emerald-400">
+                <div className="text-sm font-extrabold text-emerald-400 shrink-0">
                   {pr.weight > 0
                     ? `${formatWeight(pr.weight, profile.unit)} × ${pr.reps}`
                     : `${pr.reps} rép`}
@@ -259,11 +260,11 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
       <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3.5">
         <div>
           <div className="flex items-center gap-2 text-xs font-extrabold uppercase tracking-wider text-emerald-400">
-            <Target className="w-4 h-4" />
-            <span>Objectifs préparés pour ta prochaine séance</span>
+            <Target className="w-4 h-4 shrink-0" />
+            <span>Objectifs préparés pour la prochaine fois</span>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Calculés automatiquement selon tes séries et ton ressenti. Tu peux les ajuster librement :
+            Calculés selon tes séries et ton ressenti. Tu peux les ajuster :
           </p>
         </div>
 
@@ -273,6 +274,10 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
             const goal = nextGoals[exLog.exerciseId];
             if (!ex || !goal) return null;
             const stepW = getStepIncrement(ex.defaultIncrementKg, profile.unit);
+            const isZeroLoad =
+              ex.equipment === 'Poids du corps' ||
+              ex.equipment === 'Élastiques' ||
+              ex.equipment === 'TRX';
 
             return (
               <div
@@ -280,8 +285,8 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
                 className="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2.5"
               >
                 <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <div className="text-sm font-bold text-white">
+                  <div className="min-w-0">
+                    <div className="text-sm font-bold text-white break-words">
                       {ex.name}
                     </div>
                     <div className="text-xs font-extrabold text-emerald-400 mt-0.5">
@@ -297,57 +302,52 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
                   {goal.reason}
                 </p>
 
-                {/* Quick adjustment controls for next goal */}
-                <div className="flex items-center justify-between gap-2 pt-1 border-t border-slate-800/80 text-xs">
-                  <span className="text-[11px] text-slate-400">
-                    Ajuster l’objectif :
-                  </span>
-                  <div className="flex items-center gap-2">
-                    {ex.equipment !== 'Poids du corps' && (
-                      <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg px-1.5 py-1">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleAdjustGoalWeight(ex.id, -stepW)
-                          }
-                          className="p-1 text-slate-400 hover:text-white"
-                        >
-                          <Minus className="w-3 h-3" />
-                        </button>
-                        <span className="font-bold text-slate-200 text-[11px]">
-                          {formatWeight(goal.targetWeight, profile.unit)}
-                        </span>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleAdjustGoalWeight(ex.id, stepW)
-                          }
-                          className="p-1 text-slate-400 hover:text-white"
-                        >
-                          <Plus className="w-3 h-3" />
-                        </button>
-                      </div>
-                    )}
-
-                    <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 rounded-lg px-1.5 py-1">
+                {/* Mobile-responsive 2-column adjustment controls */}
+                <div className="pt-2 border-t border-slate-800/80 grid grid-cols-2 gap-2">
+                  {!isZeroLoad && (
+                    <div className="flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-1">
                       <button
                         type="button"
-                        onClick={() => handleAdjustGoalReps(ex.id, -1)}
-                        className="p-1 text-slate-400 hover:text-white"
+                        onClick={() => handleAdjustGoalWeight(ex.id, -stepW)}
+                        className="w-8 h-8 rounded-lg bg-slate-800 active:bg-slate-700 flex items-center justify-center text-slate-200"
                       >
-                        <Minus className="w-3 h-3" />
+                        <Minus className="w-3.5 h-3.5" />
                       </button>
-                      <span className="font-bold text-slate-200 text-[11px]">
-                        {goal.targetReps} rép
+                      <span className="font-bold text-slate-200 text-xs px-1 truncate">
+                        {formatWeight(goal.targetWeight, profile.unit)}
                       </span>
                       <button
                         type="button"
-                        onClick={() => handleAdjustGoalReps(ex.id, 1)}
-                        className="p-1 text-slate-400 hover:text-white"
+                        onClick={() => handleAdjustGoalWeight(ex.id, stepW)}
+                        className="w-8 h-8 rounded-lg bg-slate-800 active:bg-slate-700 flex items-center justify-center text-slate-200"
                       >
-                        <Plus className="w-3 h-3" />
+                        <Plus className="w-3.5 h-3.5" />
                       </button>
                     </div>
+                  )}
+
+                  <div
+                    className={`flex items-center justify-between bg-slate-900 border border-slate-800 rounded-xl p-1 ${
+                      isZeroLoad ? 'col-span-2' : ''
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      onClick={() => handleAdjustGoalReps(ex.id, -1)}
+                      className="w-8 h-8 rounded-lg bg-slate-800 active:bg-slate-700 flex items-center justify-center text-slate-200"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <span className="font-bold text-slate-200 text-xs px-1 truncate">
+                      {goal.targetReps} rép
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => handleAdjustGoalReps(ex.id, 1)}
+                      className="w-8 h-8 rounded-lg bg-slate-800 active:bg-slate-700 flex items-center justify-center text-slate-200"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 </div>
               </div>
@@ -360,7 +360,7 @@ export const WorkoutSummaryView: React.FC<WorkoutSummaryViewProps> = ({
       <button
         type="button"
         onClick={onDone}
-        className="w-full py-4 px-5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-base shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"
+        className="w-full py-4 px-5 rounded-2xl bg-emerald-500 active:bg-emerald-400 text-slate-950 font-extrabold text-base shadow-lg shadow-emerald-500/20 transition flex items-center justify-center gap-2"
       >
         <span>Valider et retour à l’accueil</span>
         <ArrowRight className="w-5 h-5" />

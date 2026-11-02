@@ -5,7 +5,6 @@ import {
   Calendar,
   Target,
   ArrowUpRight,
-  ArrowRight,
   Dumbbell,
   Clock,
   Trash2,
@@ -47,7 +46,6 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
     'exercises'
   );
 
-  // Exercises that have at least 1 logged session first, then others
   const exercisesWithCounts = exercises
     .map((ex) => {
       const count = sessions.filter((s) =>
@@ -68,7 +66,6 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
   const selectedExercise =
     exercises.find((e) => e.id === selectedExId) || exercises[0];
 
-  // Build chronological history for the selected exercise (oldest -> newest)
   const exerciseHistory = [...sessions]
     .reverse()
     .map((session) => {
@@ -106,7 +103,6 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
     })
     .filter((item): item is NonNullable<typeof item> => item !== null);
 
-  // Personal Record & Comparison with previous session
   const latestEntry = exerciseHistory[exerciseHistory.length - 1];
   const prevEntry =
     exerciseHistory.length >= 2
@@ -134,8 +130,8 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
   const nextGoal = goals[selectedExercise.id];
 
   return (
-    <div className="space-y-4 pb-28 animate-pop">
-      {/* Top Switcher: Progression par exercice vs Historique des séances */}
+    <div className="w-full max-w-full space-y-4 pb-28 animate-pop overflow-hidden">
+      {/* Top Switcher */}
       <div className="grid grid-cols-2 gap-2 bg-slate-900 p-1.5 rounded-2xl border border-slate-800">
         <button
           type="button"
@@ -146,7 +142,7 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <TrendingUp className="w-4 h-4" />
+          <TrendingUp className="w-4 h-4 shrink-0" />
           <span>Par Exercice</span>
         </button>
         <button
@@ -158,15 +154,15 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
               : 'text-slate-400 hover:text-white'
           }`}
         >
-          <Calendar className="w-4 h-4" />
+          <Calendar className="w-4 h-4 shrink-0" />
           <span>Séances ({sessions.length})</span>
         </button>
       </div>
 
       {activeTab === 'exercises' ? (
-        <div className="space-y-4">
+        <div className="space-y-4 min-w-0">
           {/* Horizontal Exercise Selector Pills */}
-          <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+          <div className="w-full flex gap-2 overflow-x-auto no-scrollbar pb-1">
             {exercisesWithCounts.map(({ ex, count }) => {
               const active = ex.id === selectedExercise.id;
               return (
@@ -183,7 +179,7 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                   <span>{ex.name}</span>
                   {count > 0 && (
                     <span
-                      className={`px-1.5 py-0.2 rounded-md text-[10px] ${
+                      className={`px-1.5 py-0.5 rounded-md text-[10px] ${
                         active
                           ? 'bg-emerald-500 text-slate-950 font-extrabold'
                           : 'bg-slate-800 text-slate-400'
@@ -198,17 +194,17 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
           </div>
 
           {/* Exercise Detailed Sheet */}
-          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4">
+          <div className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-4 overflow-hidden">
             <div className="flex items-start justify-between gap-2">
-              <div>
+              <div className="min-w-0 flex-1">
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-slate-800 text-slate-300">
                   {selectedExercise.category} • {selectedExercise.equipment}
                 </span>
-                <h2 className="text-lg font-extrabold text-white mt-1">
+                <h2 className="text-base sm:text-lg font-extrabold text-white mt-1 break-words">
                   {selectedExercise.name}
                 </h2>
               </div>
-              <div className="text-right">
+              <div className="text-right shrink-0">
                 <div className="text-[11px] text-slate-400">Séances</div>
                 <div className="text-base font-extrabold text-emerald-400">
                   {exerciseHistory.length}
@@ -230,13 +226,14 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
               <>
                 {/* Key Cards: Best Set PR + Comparison with Last Session */}
                 <div className="grid grid-cols-2 gap-2.5">
-                  <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3">
+                  <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 min-w-0">
                     <div className="text-[11px] font-bold text-amber-400 flex items-center gap-1">
-                      <Trophy className="w-3.5 h-3.5" /> Meilleure série (Record)
+                      <Trophy className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Record</span>
                     </div>
                     {allTimeBestSet && (
                       <>
-                        <div className="text-base font-extrabold text-white mt-1">
+                        <div className="text-sm sm:text-base font-extrabold text-white mt-1 truncate">
                           {allTimeBestSet.maxWeight > 0
                             ? `${formatWeight(
                                 allTimeBestSet.maxWeight,
@@ -244,17 +241,18 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                               )} × ${allTimeBestSet.repsAtMaxWeight}`
                             : `${allTimeBestSet.repsAtMaxWeight} rép`}
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
-                          1RM estimé :{' '}
+                        <div className="text-[11px] text-slate-400 mt-0.5 truncate">
+                          1RM :{' '}
                           {formatWeight(allTimeBestSet.best1RM, profile.unit)}
                         </div>
                       </>
                     )}
                   </div>
 
-                  <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3">
+                  <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3 min-w-0">
                     <div className="text-[11px] font-bold text-emerald-400 flex items-center gap-1">
-                      <ArrowUpRight className="w-3.5 h-3.5" /> Vs séance précédente
+                      <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
+                      <span className="truncate">Vs précédente</span>
                     </div>
                     {!prevEntry ? (
                       <>
@@ -262,12 +260,12 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                           1re séance
                         </div>
                         <div className="text-[11px] text-slate-400 mt-0.5">
-                          Base de départ créée
+                          Base de départ
                         </div>
                       </>
                     ) : (
                       <>
-                        <div className="text-base font-extrabold text-white mt-1">
+                        <div className="text-sm sm:text-base font-extrabold text-white mt-1 truncate">
                           {weightDiff > 0
                             ? `+${formatWeight(weightDiff, profile.unit)}`
                             : weightDiff < 0
@@ -276,9 +274,9 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                             ? `+${repsDiff} rép`
                             : repsDiff < 0
                             ? `${repsDiff} rép`
-                            : 'Charge maintenue'}
+                            : 'Maintenue'}
                         </div>
-                        <div className="text-[11px] text-slate-400 mt-0.5">
+                        <div className="text-[11px] text-slate-400 mt-0.5 truncate">
                           Avant :{' '}
                           {formatWeight(prevEntry.maxWeight, profile.unit)} ×{' '}
                           {prevEntry.repsAtMaxWeight}
@@ -290,12 +288,12 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
 
                 {/* Simple & Clear SVG Evolution Chart */}
                 <div className="bg-slate-950/90 border border-slate-800 rounded-xl p-3.5 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-slate-300">
-                      Évolution de la charge ({profile.unit})
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-bold text-slate-300 truncate">
+                      Évolution ({profile.unit})
                     </span>
                     {exerciseHistory.length >= 2 && (
-                      <span className="text-[11px] font-semibold text-emerald-400">
+                      <span className="text-[11px] font-semibold text-emerald-400 shrink-0">
                         {displayWeight(exerciseHistory[0].maxWeight, profile.unit)}{' '}
                         →{' '}
                         {displayWeight(
@@ -319,22 +317,17 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                       ),
                       reps: h.repsAtMaxWeight,
                     }))}
-                    unit={
-                      selectedExercise.equipment === 'Poids du corps'
-                        ? 'rép'
-                        : profile.unit
-                    }
                   />
                 </div>
 
                 {/* Next Automatic Goal Box */}
                 {nextGoal && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-center justify-between gap-2">
-                    <div>
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 flex items-start justify-between gap-2">
+                    <div className="min-w-0">
                       <div className="text-[11px] font-extrabold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
-                        <Target className="w-3.5 h-3.5" /> Prochain objectif
+                        <Target className="w-3.5 h-3.5 shrink-0" /> Prochain objectif
                       </div>
-                      <div className="text-sm font-bold text-white mt-0.5">
+                      <div className="text-sm font-bold text-white mt-0.5 break-words">
                         {nextGoal.title}
                       </div>
                       <div className="text-[11px] text-slate-300 mt-0.5">
@@ -355,27 +348,27 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                   {[...exerciseHistory].reverse().map((entry) => (
                     <div
                       key={entry.sessionId}
-                      className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 flex items-center justify-between gap-2 text-xs"
+                      className="bg-slate-950/70 border border-slate-800/80 rounded-xl p-3 space-y-2 text-xs"
                     >
-                      <div>
-                        <div className="font-bold text-slate-200">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="font-bold text-slate-200">
                           {new Date(entry.date).toLocaleDateString('fr-FR', {
                             weekday: 'short',
                             day: 'numeric',
                             month: 'short',
                           })}
-                        </div>
+                        </span>
                         {entry.note && (
-                          <div className="text-[11px] text-slate-400 italic mt-0.5">
+                          <span className="text-[11px] text-slate-400 italic truncate">
                             « {entry.note} »
-                          </div>
+                          </span>
                         )}
                       </div>
-                      <div className="flex flex-wrap justify-end gap-1.5">
+                      <div className="flex flex-wrap gap-1.5">
                         {entry.sets.map((s, i) => (
                           <span
                             key={i}
-                            className="px-2 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 font-semibold"
+                            className="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-800 text-slate-200 font-semibold text-[11px]"
                           >
                             {s.weight > 0
                               ? `${displayWeight(s.weight, profile.unit)}${
@@ -414,16 +407,16 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
               return (
                 <div
                   key={session.id}
-                  className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3"
+                  className="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 space-y-3 overflow-hidden"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <div className="text-[11px] font-semibold text-slate-400 flex items-center gap-2">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-[11px] font-semibold text-slate-400 flex items-center flex-wrap gap-1.5">
                         <span>
                           {new Date(session.completedAt).toLocaleDateString(
                             'fr-FR',
                             {
-                              weekday: 'long',
+                              weekday: 'short',
                               day: 'numeric',
                               month: 'short',
                             }
@@ -435,12 +428,12 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                           {formatDuration(session.durationSeconds)}
                         </span>
                       </div>
-                      <h3 className="text-base font-extrabold text-white mt-0.5">
+                      <h3 className="text-base font-extrabold text-white mt-0.5 break-words">
                         {session.title}
                       </h3>
                     </div>
 
-                    <div className="flex items-center gap-1.5">
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <span className="text-xs font-extrabold px-2.5 py-1 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
                         +{session.xpEarned} XP
                       </span>
@@ -466,46 +459,49 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
                       return (
                         <div
                           key={exLog.id}
-                          className="bg-slate-950/80 border border-slate-800/80 rounded-xl px-3 py-2 flex items-center justify-between gap-2 text-xs"
+                          className="bg-slate-950/80 border border-slate-800/80 rounded-xl px-3 py-2 space-y-1 text-xs"
                         >
-                          <span className="font-bold text-slate-200 truncate">
+                          <div className="font-bold text-slate-200 truncate">
                             {ex?.name || 'Exercice'}
-                          </span>
-                          <span className="text-slate-400 shrink-0 font-medium">
-                            {completed
-                              .map((s) =>
-                                s.weight > 0
+                          </div>
+                          <div className="text-slate-400 font-medium text-[11px] flex flex-wrap gap-1.5">
+                            {completed.map((s, idx) => (
+                              <span
+                                key={idx}
+                                className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800"
+                              >
+                                {s.weight > 0
                                   ? `${displayWeight(
                                       s.weight,
                                       profile.unit
-                                    )}×${s.reps}`
-                                  : `${s.reps} rép`
-                              )
-                              .join(', ')}
-                          </span>
+                                    )}${profile.unit}×${s.reps}`
+                                  : `${s.reps} rép`}
+                              </span>
+                            ))}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
 
                   {/* Footer with PR count & Repeat button */}
-                  <div className="flex items-center justify-between pt-1 text-xs">
+                  <div className="flex items-center justify-between gap-2 pt-1 text-xs">
                     <div className="flex items-center gap-3 text-slate-400">
                       <span>{totalSets} séries</span>
                       {session.prsAchieved && session.prsAchieved.length > 0 && (
                         <span className="text-amber-400 font-bold flex items-center gap-1">
                           <Trophy className="w-3.5 h-3.5" />
-                          {session.prsAchieved.length} record(s)
+                          {session.prsAchieved.length} PR
                         </span>
                       )}
                     </div>
                     <button
                       type="button"
                       onClick={() => onRepeatSession(session)}
-                      className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition"
+                      className="px-3 py-2 rounded-xl bg-slate-800 active:bg-slate-700 text-emerald-300 font-bold text-xs flex items-center gap-1.5 transition shrink-0"
                     >
                       <Play className="w-3 h-3 fill-emerald-300" />
-                      <span>Refaire cette séance</span>
+                      <span>Refaire</span>
                     </button>
                   </div>
                 </div>
@@ -518,11 +514,9 @@ export const ProgressView: React.FC<ProgressViewProps> = ({
   );
 };
 
-/* Clean, mobile-friendly SVG line & bar chart */
 const SimpleLoadChart: React.FC<{
   data: { label: string; value: number; reps: number }[];
-  unit: string;
-}> = ({ data, unit }) => {
+}> = ({ data }) => {
   if (data.length === 0) return null;
 
   const recent = data.slice(-7);
@@ -531,9 +525,9 @@ const SimpleLoadChart: React.FC<{
   const maxVal = Math.max(...values);
   const range = Math.max(5, maxVal - minVal);
 
-  const width = 320;
-  const height = 130;
-  const padX = 28;
+  const width = 300;
+  const height = 125;
+  const padX = 24;
   const padY = 24;
 
   const points = recent.map((d, i) => {
@@ -554,9 +548,8 @@ const SimpleLoadChart: React.FC<{
     <div className="w-full overflow-hidden">
       <svg
         viewBox={`0 0 ${width} ${height}`}
-        className="w-full h-36 overflow-visible"
+        className="w-full h-32 block"
       >
-        {/* Subtle horizontal guide lines */}
         <line
           x1={padX}
           y1={padY}
@@ -573,7 +566,6 @@ const SimpleLoadChart: React.FC<{
           stroke="#1e293b"
         />
 
-        {/* Line connecting points */}
         {points.length > 1 && (
           <polyline
             fill="none"
@@ -585,7 +577,6 @@ const SimpleLoadChart: React.FC<{
           />
         )}
 
-        {/* Data points & labels */}
         {points.map((p, idx) => (
           <g key={idx}>
             <circle
